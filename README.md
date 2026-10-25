@@ -1,4 +1,8 @@
-# Quality Loop
+# Quality Loop for Data-Center Delivery
+
+[![Watch the demo](docs/media/poster.png)](docs/media/quality-loop-demo.mp4)
+
+**[▶ Watch the demo video](docs/media/quality-loop-demo.mp4)** (about 1 minute, captioned) · **[Live demo](https://dadcoder001.github.io/datacenter-quality-loop/)** · [Roadmap: reusable skill](ROADMAP.md)
 
 A closed-loop quality and learning MVP for data-center delivery, from product design through site work, construction, commissioning and facility handover. It is company-neutral and uses a fictional project ("Project Meridian") with clearly labeled demo data.
 
@@ -31,7 +35,7 @@ npm run e2e                      # workflows and accessibility (axe)
 ## Demo assets
 
 - Screenshots: `docs/screenshots/` (`node scripts/screenshots.mjs` against a running preview).
-- Video: `node scripts/record-demo.mjs` writes `demo-output/quality-loop-demo.mp4` (captioned, about 1 minute). Outline in [docs/video-script.md](docs/video-script.md).
+- Video: `docs/media/quality-loop-demo.mp4` (also a release asset). Regenerate with `node scripts/record-demo.mjs` against a running preview, then copy from `demo-output/`. Outline in [docs/video-script.md](docs/video-script.md).
 
 ## Honesty notes
 
@@ -42,6 +46,14 @@ npm run e2e                      # workflows and accessibility (axe)
 ## 3D option
 
 The renderer sits behind a `SceneRenderer` interface and facility geometry is plain data (`src/render/scene.ts`), so a 3D renderer can replace the isometric one without touching the engine or UI.
+
+## Next: a reusable skill
+
+vNext turns this into a skill you can adapt to your own data-center business (your phases, issue families, cost drivers and terminology). See [ROADMAP.md](ROADMAP.md) and the [skill/](skill/) scaffold (planned, not yet shipped).
+
+## License
+
+MIT, see [LICENSE](LICENSE).
 
 ## Practitioner review checklist
 
