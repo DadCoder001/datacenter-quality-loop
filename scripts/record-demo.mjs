@@ -1,11 +1,32 @@
 import { chromium } from '@playwright/test';
-import { mkdirSync, readdirSync, renameSync, rmSync } from 'node:fs';
+import { mkdirSync, readdirSync, readFileSync, renameSync, rmSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 
 const base = process.env.BASE_URL ?? 'http://localhost:4173';
 const out = 'demo-output';
 const tmp = `${out}/raw`;
+const audioDir = `${out}/audio`;
 mkdirSync(tmp, { recursive: true });
+mkdirSync(audioDir, { recursive: true });
+
+const narration = [];
+let t0 = 0;
+
+// Offline Windows speech synthesis; text passed via env var to avoid quoting issues.
+const synth = (text, file) => {
+  const script =
+    'Add-Type -AssemblyName System.Speech; $s = New-Object System.Speech.Synthesis.SpeechSynthesizer; ' +
+    '$s.Rate = 0; $s.SetOutputToWaveFile($env:TTS_FILE); $s.Speak($env:TTS_TEXT); $s.Dispose()';
+  const r = spawnSync('powershell', ['-NoProfile', '-Command', script], {
+    env: { ...process.env, TTS_TEXT: text, TTS_FILE: file },
+    stdio: 'inherit',
+  });
+  if (r.status !== 0) throw new Error('speech synthesis failed');
+  const wav = readFileSync(file);
+  const byteRate = wav.readUInt32LE(28);
+  const dataIdx = wav.indexOf('data');
+  return wav.readUInt32LE(dataIdx + 4) / byteRate;
+};
 
 const browser = await chromium.launch();
 const ctx = await browser.newContext({
@@ -13,8 +34,12 @@ const ctx = await browser.newContext({
   recordVideo: { dir: tmp, size: { width: 1280, height: 720 } },
 });
 const page = await ctx.newPage();
+t0 = Date.now();
 
 const caption = async (text, ms = 3500) => {
+  const file = `${audioDir}/n${narration.length}.wav`;
+  const seconds = synth(text, file);
+  narration.push({ file, startMs: Date.now() - t0 });
   await page.evaluate((t) => {
     let el = document.getElementById('demo-caption');
     if (!el) {
@@ -28,7 +53,7 @@ const caption = async (text, ms = 3500) => {
     }
     el.textContent = t;
   }, text);
-  await page.waitForTimeout(ms);
+  await page.waitForTimeout(Math.max(ms, seconds * 1000 + 600));
 };
 
 const scrub = async (from, to, stepMs = 40, step = 3) => {
@@ -77,5 +102,14 @@ const src = await video.path();
 const webm = `${out}/quality-loop-demo.webm`;
 renameSync(src, webm);
 rmSync(tmp, { recursive: true, force: true });
-const r = spawnSync('ffmpeg', ['-y', '-i', webm, '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-crf', '23', `${out}/quality-loop-demo.mp4`], { stdio: 'inherit' });
+const inputs = narration.flatMap((n) => ['-i', n.file]);
+const delays = narration.map((n, i) => `[${i + 1}:a]adelay=${n.startMs}|${n.startMs}[a${i}]`).join(';');
+const mix = narration.map((_, i) => `[a${i}]`).join('') + `amix=inputs=${narration.length}:normalize=0[aout]`;
+const r = spawnSync(
+  'ffmpeg',
+  ['-y', '-i', webm, ...inputs, '-filter_complex', `${delays};${mix}`, '-map', '0:v', '-map', '[aout]',
+   '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-crf', '23', '-c:a', 'aac', '-b:a', '128k', '-shortest', `${out}/quality-loop-demo.mp4`],
+  { stdio: 'inherit' },
+);
+rmSync(audioDir, { recursive: true, force: true });
 console.log('files:', readdirSync(out), 'ffmpeg exit', r.status);
