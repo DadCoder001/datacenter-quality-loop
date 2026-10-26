@@ -7,8 +7,10 @@ import { RegisterView } from './features/RegisterView';
 import { IssueWorkspace } from './features/IssueWorkspace';
 import { ActionBoard } from './features/ActionBoard';
 import { LearningView } from './features/LearningView';
+import { VideoView } from './features/VideoView';
 
 const NAV: { name: Route['name']; label: string }[] = [
+  { name: 'video', label: 'Demo video' },
   { name: 'sim', label: 'Simulation' },
   { name: 'dashboard', label: 'Dashboard' },
   { name: 'register', label: 'Issues' },
@@ -50,6 +52,7 @@ export default function App() {
         {route.name === 'issue' && route.param ? <IssueWorkspace id={route.param} /> : null}
         {route.name === 'actions' && <ActionBoard />}
         {route.name === 'learning' && <LearningView />}
+        {route.name === 'video' && <VideoView />}
       </main>
     </div>
   );

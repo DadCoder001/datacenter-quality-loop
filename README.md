@@ -2,7 +2,7 @@
 
 [![Watch the demo](docs/media/poster.png)](docs/media/quality-loop-demo.mp4)
 
-**[▶ Watch the demo video](docs/media/quality-loop-demo.mp4)** (about 1 minute, captioned) · **[Live demo](https://dadcoder001.github.io/datacenter-quality-loop/)** · Reusable skill: in the works
+**[▶ Watch the demo video](docs/media/quality-loop-demo.mp4)** (about 1 minute, captioned) · **[Live demo](https://dadcoder001.github.io/datacenter-quality-loop/)** · [Video on the live site](https://dadcoder001.github.io/datacenter-quality-loop/#/video) · Reusable skill: in the works
 
 A closed-loop quality and learning MVP for data-center delivery, from product design through site work, construction, commissioning and facility handover. It is company-neutral and uses a fictional project ("Project Meridian") with clearly labeled demo data.
 

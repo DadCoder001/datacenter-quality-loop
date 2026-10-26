@@ -146,7 +146,14 @@ test('action board lets an owner complete an overdue action', async ({ page }) =
   await expect(page.getByRole('heading', { name: `Overdue (${before - 1})` })).toBeVisible();
 });
 
-for (const route of ['sim', 'dashboard', 'register', 'issue/I-017', 'actions', 'learning']) {
+test('demo video page serves a playable video', async ({ page }) => {
+  await page.goto('/#/video');
+  const video = page.getByTestId('demo-video');
+  await expect(video).toBeVisible();
+  await expect.poll(() => video.evaluate((v: HTMLVideoElement) => v.readyState)).toBeGreaterThan(0);
+});
+
+for (const route of ['sim', 'dashboard', 'register', 'issue/I-017', 'actions', 'learning', 'video']) {
   test(`accessibility: no serious violations on #/${route}`, async ({ page }) => {
     await page.goto(`/#/${route}`);
     await setDay(page, 295);
