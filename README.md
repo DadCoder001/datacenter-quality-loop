@@ -2,7 +2,7 @@
 
 [![Watch the demo](docs/media/poster.png)](docs/media/quality-loop-demo.mp4)
 
-**[▶ Watch the demo video](docs/media/quality-loop-demo.mp4)** (about 1 minute, captioned) · **[Live demo](https://dadcoder001.github.io/datacenter-quality-loop/)** · [Roadmap: reusable skill](ROADMAP.md)
+**[▶ Watch the demo video](docs/media/quality-loop-demo.mp4)** (about 1 minute, captioned) · **[Live demo](https://dadcoder001.github.io/datacenter-quality-loop/)** · Reusable skill: in the works
 
 A closed-loop quality and learning MVP for data-center delivery, from product design through site work, construction, commissioning and facility handover. It is company-neutral and uses a fictional project ("Project Meridian") with clearly labeled demo data.
 
@@ -47,9 +47,9 @@ npm run e2e                      # workflows and accessibility (axe)
 
 The renderer sits behind a `SceneRenderer` interface and facility geometry is plain data (`src/render/scene.ts`), so a 3D renderer can replace the isometric one without touching the engine or UI.
 
-## Next: a reusable skill
+## What's next
 
-vNext turns this into a skill you can adapt to your own data-center business (your phases, issue families, cost drivers and terminology). See [ROADMAP.md](ROADMAP.md) and the [skill/](skill/) scaffold (planned, not yet shipped).
+I'm working on turning this into a reusable skill that can be adapted to your own data-center business (your phases, issue families, cost drivers and terminology). It is not available yet.
 
 ## License
 
