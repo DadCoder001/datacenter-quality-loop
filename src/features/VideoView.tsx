@@ -5,7 +5,7 @@ export function VideoView() {
     <section aria-labelledby="video-h">
       <h1 id="video-h">Demo video</h1>
       <p className="muted">
-        A captioned, narrated walkthrough (under two minutes): the lifecycle simulation, the dashboard, one issue worked through the closed loop, and the learning view.
+        A captioned, narrated walkthrough (about two minutes): the lifecycle simulation, the dashboard, one issue worked through the closed loop, and the learning view.
         All data is fictional.
       </p>
       <video

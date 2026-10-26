@@ -1,31 +1,38 @@
 import { chromium } from '@playwright/test';
-import { mkdirSync, readdirSync, readFileSync, renameSync, rmSync } from 'node:fs';
+import { MsEdgeTTS, OUTPUT_FORMAT } from 'msedge-tts';
+import { mkdirSync, readdirSync, renameSync, rmSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 
 const base = process.env.BASE_URL ?? 'http://localhost:4173';
 const out = 'demo-output';
 const tmp = `${out}/raw`;
 const audioDir = `${out}/audio`;
+const VOICE = process.env.TTS_VOICE ?? 'en-US-AndrewMultilingualNeural';
 mkdirSync(tmp, { recursive: true });
 mkdirSync(audioDir, { recursive: true });
 
 const narration = [];
 let t0 = 0;
 
-// Offline Windows speech synthesis; text passed via env var to avoid quoting issues.
-const synth = (text, file) => {
-  const script =
-    'Add-Type -AssemblyName System.Speech; $s = New-Object System.Speech.Synthesis.SpeechSynthesizer; ' +
-    '$s.Rate = 0; $s.SetOutputToWaveFile($env:TTS_FILE); $s.Speak($env:TTS_TEXT); $s.Dispose()';
-  const r = spawnSync('powershell', ['-NoProfile', '-Command', script], {
-    env: { ...process.env, TTS_TEXT: text, TTS_FILE: file },
-    stdio: 'inherit',
-  });
-  if (r.status !== 0) throw new Error('speech synthesis failed');
-  const wav = readFileSync(file);
-  const byteRate = wav.readUInt32LE(28);
-  const dataIdx = wav.indexOf('data');
-  return wav.readUInt32LE(dataIdx + 4) / byteRate;
+const durationOf = (file) =>
+  Number(spawnSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', file]).stdout.toString());
+
+// Neural voice via the Microsoft Edge read-aloud service (caption text is sent to Microsoft).
+const synth = async (text, index) => {
+  const dir = `${audioDir}/n${index}`;
+  mkdirSync(dir, { recursive: true });
+  for (let attempt = 1; ; attempt++) {
+    const tts = new MsEdgeTTS();
+    try {
+      await tts.setMetadata(VOICE, OUTPUT_FORMAT.AUDIO_24KHZ_48KBITRATE_MONO_MP3);
+      const { audioFilePath } = await tts.toFile(dir, text);
+      return { file: audioFilePath, seconds: durationOf(audioFilePath) };
+    } catch (e) {
+      if (attempt >= 3) throw e;
+    } finally {
+      tts.close();
+    }
+  }
 };
 
 const browser = await chromium.launch();
@@ -37,8 +44,7 @@ const page = await ctx.newPage();
 t0 = Date.now();
 
 const caption = async (text, ms = 3500) => {
-  const file = `${audioDir}/n${narration.length}.wav`;
-  const seconds = synth(text, file);
+  const { file, seconds } = await synth(text, narration.length);
   narration.push({ file, startMs: Date.now() - t0 });
   await page.evaluate((t) => {
     let el = document.getElementById('demo-caption');
