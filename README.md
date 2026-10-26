@@ -8,6 +8,18 @@ A closed-loop quality and learning MVP for data-center delivery, from product de
 
 ![Simulation](docs/screenshots/01-simulation-day-295.png)
 
+## Why this exists
+
+Data centers are the picks and shovels of the AI economy. Models and chips get the attention, but none of it runs until capacity is built, and built right. With that much capital going into steel, power and cooling, the economics of quality get interesting: a defect caught in design costs a fraction of the same defect found at commissioning, and every week of delay is capacity that isn't earning.
+
+I have no professional background in data-center delivery. This is a weekend of curiosity, built with AI tools (GitHub Copilot) as a pair, to explore one question: what would a closed loop of capture, root cause, verification and lessons learned look like here, and what could it be worth?
+
+Treat it as a thinking tool, not an authority:
+
+- All data is fictional and every assumption is editable.
+- It is not a forecast, a benchmark or a claim about any real project or company.
+- **Practitioner feedback is the point.** If you work in data-center design, construction, commissioning or quality, please [open an issue](../../issues/new?template=practitioner-feedback.md) and tell me where it matches reality and where it misses.
+
 ## What it shows
 
 - **Lifecycle simulation**: the same project played twice, closed loop OFF vs ON, on an isometric site view with a project-day scrubber (day 0–360, five phases, five capacity milestones).
